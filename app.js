@@ -7,11 +7,11 @@ const socketIo = require("socket.io");
 const socketioJwt   = require('socketio-jwt');
 const http = require("http");
 const PORT = process.env.PORT || 8080;
-const db = require("./models");
+// const db = require("./models");
 
-db.sequelize.sync({
-    // alter: true
-});
+// db.sequelize.sync({
+//     // alter: true
+// });
 
 // Add middleware for parsing URL encoded bodies (which are usually sent by browser)
 app.use(cors());

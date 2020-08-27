@@ -12,7 +12,7 @@ const logIn = async (req, res) => {
     const schema = Joi.object({
         username: Joi.string()
         .required(),
-        password: Joi.string()
+        password: Joi.optional()
     })
 
     const validation = schema.validate(body, {abortEarly: false});
@@ -40,8 +40,13 @@ const logIn = async (req, res) => {
         if(!user.data.data[0]['14'].value) {
             return res.json({
                 access_token: token,
-                username: !user.data.data[0]['6'].value,
+                username: user.data.data[0]['6'].value,
                 team: user.data.data[0]['9'].value,
+                id: user.data.data[0]['3'].value,
+                employee_level: user.data.data[0]['60'].value,
+                transition: user.data.data[0]['269'].value,
+                schedule: user.data.data[0]['19'].value,
+                status: user.data.data[0]['13'].value,
                 change_passwod: true
             })
         }
@@ -50,6 +55,11 @@ const logIn = async (req, res) => {
             access_token: token,
             username: user.data.data[0]['6'].value,
             team: user.data.data[0]['9'].value,
+            id: user.data.data[0]['3'].value,
+            employee_level: user.data.data[0]['60'].value,
+            transition: user.data.data[0]['269'].value,
+            schedule: user.data.data[0]['19'].value,
+            status: user.data.data[0]['13'].value,
         });
         
 
