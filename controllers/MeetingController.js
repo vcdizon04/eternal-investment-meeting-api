@@ -1,5 +1,5 @@
-const { setMeetingState, getMeetingState, getAllPresents, addPresentUser, getIsMeetingTriggered, adjournedMeeting, setRollCallState, getRollCallState, updateUser } = require("../services/MeetingService");
-const { getAllAbsents } = require("../services/QuickBaseService");
+const { setMeetingState, getMeetingState, getAllPresents, addPresentUser, getIsMeetingTriggered, adjournedMeeting, setRollCallState, getRollCallState, updateUser, resetRollcall, setAbsents, getAllCurrentAbsents } = require("../services/MeetingService");
+const { getAllAbsents, getAttendanceByFullname, updateAttendance, getAllAttendance, updateAbsentsAttendance, addRemarks } = require("../services/QuickBaseService");
 
 const start = async (req, res) => {
     const io = req.app.get('socketio');
@@ -26,6 +26,16 @@ const end = async (req, res) => {
     setMeetingState('end');
     console.log('getMeetingState: ', getMeetingState());
     io.emit(`meeting/state`, getMeetingState());
+    const attendances = await getAllAttendance();
+    const absentsAttendance = attendances.data.data.filter(attendance => (getAllPresents().findIndex(present => present.username !== attendance['6'].value) > -1))
+    console.log('getAllAttendance: ', absentsAttendance)
+    let absentIds = [];
+    absentsAttendance.forEach(absent => {
+        absentIds.push(absent['3'].value);
+
+    })
+    console.log('absentIds: ', absentIds);
+    await updateAbsentsAttendance(absentIds);
     return res.json({
         message: "Meeting ended successfully"
     })
@@ -53,6 +63,14 @@ const adjourned = async (req, res) => {
 
 
 const stamp = async (req, res) => {
+    const result = await getAttendanceByFullname(req.body.username);
+    let latestAttendanceId = 0;
+    result.data.data.forEach(attendance => {
+        console.log("attendance['3'].value :", attendance['3'].value)
+        if(attendance['3'].value > latestAttendanceId) latestAttendanceId = attendance['3'].value
+    });
+    console.log('latesAttendanceId: ', latestAttendanceId);
+    await updateAttendance(latestAttendanceId);
     const io = req.app.get('socketio');
     console.log(req.body);
     addPresentUser(req.body);
@@ -60,6 +78,22 @@ const stamp = async (req, res) => {
     io.emit(`meeting/users`, getAllPresents())
     return res.json({
         message: "Stamp successfully"
+    })
+}
+
+const addAbsentRemarks = async (req, res) => {
+    const result = await getAttendanceByFullname(req.body.username);
+    let latestAttendanceId = 0;
+    result.data.data.forEach(attendance => {
+        console.log("attendance['3'].value :", attendance['3'].value)
+        if(attendance['3'].value > latestAttendanceId) latestAttendanceId = attendance['3'].value
+    });
+    console.log('latesAttendanceId: ', latestAttendanceId);
+    await addRemarks(latestAttendanceId, req.body.remarks);
+    const io = req.app.get('socketio');
+    io.emit(`meeting/absents`, getAllCurrentAbsents())
+    return res.json({
+        message: "Remarks added successfully"
     })
 }
 
@@ -95,15 +129,16 @@ const getMeeting = async (req, res) => {
         data: {
             state: getMeetingState(),
             users: getAllPresents(),
-            isMeetingTriggered: getIsMeetingTriggered()
+            isMeetingTriggered: getIsMeetingTriggered(),
+            rollCallState: getRollCallState()
         }
     })
 }
 
 const getAbsents =  async (req, res) => {
     let absents = await getAllAbsents();
-    console.log(absents.data);
-    absents = absents.data.data.map(user => {
+    absents = absents.data.data.filter(user => (getAllPresents().findIndex(present => present.id == user['3'].value) < 0))
+    absents = absents.map(user => {
         return {
             username:user['6'].value,
             team:user['9'].value,
@@ -114,6 +149,7 @@ const getAbsents =  async (req, res) => {
             status:user['13'].value,
         }
     })
+    setAbsents(absents);
     return res.json({
         data: absents
     })
@@ -121,7 +157,9 @@ const getAbsents =  async (req, res) => {
 
 const rollCall =  async (req, res) => {
     const io = req.app.get('socketio');
+    resetRollcall();    
     setRollCallState(true);
+    io.emit(`meeting/users`, getAllPresents())
     io.emit(`meeting/rollcall/state`, getRollCallState());
     return res.json({
         data: getRollCallState(),
@@ -161,5 +199,6 @@ module.exports = {
     adjourned,
     rollCall,
     stopRollCall,
-    setUserRollCallStatus
+    setUserRollCallStatus,
+    addAbsentRemarks
 }

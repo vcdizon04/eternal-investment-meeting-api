@@ -2,10 +2,30 @@ let meeTingSate = 'none';
 let isMeetingTriggered = false;
 let rollCallSte = false;
 let presents = [];
+let absents = [];
 
 const setMeetingState = state => {
     meeTingSate = state;
     isMeetingTriggered = true;
+}
+
+const updateAbasents = () => {
+    
+}
+
+const updateAbsentUser = (id, remarks) => {
+    // const index = absents.findIndex(user => user.id == id);
+    // console.log('index: ', index);
+    // const user = absents[index];
+    // user.remarks = remarks;
+}
+
+const getAllCurrentAbsents = () => {
+    return absents;
+}
+
+const setAbsents = (data) => {
+    absents = data;
 }
 
 const getMeetingState = () => {
@@ -26,6 +46,15 @@ const updateUser = (id) => {
     user.rollCall = true;
 }
 
+const resetRollcall = () => {
+    presents = presents.map(user => {
+        return {
+            ...user,
+            rollCall: false,
+        }
+    })
+}
+
 const addPresentUser = (user) => {
     presents.push(user);
 }
@@ -42,6 +71,7 @@ const adjournedMeeting = () => {
     meeTingSate = 'none';
     isMeetingTriggered = false;
     presents = [];
+    rollCallSte = false;
 
 }
 
@@ -54,5 +84,9 @@ module.exports = {
     adjournedMeeting,
     setRollCallState,
     getRollCallState,
-    updateUser
+    updateUser,
+    resetRollcall,
+    setAbsents,
+    updateAbsentUser,
+    getAllCurrentAbsents,
 }
