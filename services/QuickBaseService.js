@@ -25,7 +25,7 @@ const getAttendanceByFullname = (fullName) => {
     })
 }
 
-const addRemarks = async (id, reason) => {
+const addRemarks = async (id, username, reason) => {
     const currentHours = new Date().getHours();
 
     const body = {
@@ -50,7 +50,7 @@ const addRemarks = async (id, reason) => {
              }
          ],
      };
-    updateAbsentUser(id, reason);
+    updateAbsentUser(id, username, reason);
     return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
         headers: headers
     })
@@ -153,6 +153,30 @@ const getUser =  (user) => {
     })
 }
 
+const updatePassword = async (id, password) => {
+    const body = {
+       "to": "bqspvwtgy",
+        "data": [
+            {
+                "3": {
+                    "value": id
+                },
+                "14": {
+                    "value": password
+                }
+                
+            }
+        ],
+        "fieldsToReturn": [
+            6,9,14,3,60,269,19,13,119
+        ]
+    };
+    console.log(JSON.stringify(body))
+    return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
+        headers: headers
+    })
+}
+
 const getAllAbsents = () => {
     let body = {
         "from": "bqspvwtgy",
@@ -174,5 +198,6 @@ module.exports = {
     updateAttendance,
     getAllAttendance,
     updateAbsentsAttendance,
-    addRemarks
+    addRemarks,
+    updatePassword
 }

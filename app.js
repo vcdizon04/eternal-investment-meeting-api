@@ -5,6 +5,7 @@ const authenticate = require('./middlewares/verifyAuth');
 const roles = require('./middlewares/verifyPermission');
 const socketIo = require("socket.io");
 const socketioJwt   = require('socketio-jwt');
+const https = require("https");
 const http = require("http");
 const PORT = process.env.PORT || 8080;
 // const db = require("./models");
@@ -49,5 +50,5 @@ io.on("connection", (socket) => {
 app.set('socketio', io);
 
 
-server.listen(PORT, () => console.log('Server started on port 8080'));
+server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 

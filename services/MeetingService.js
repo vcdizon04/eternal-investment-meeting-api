@@ -13,11 +13,12 @@ const updateAbasents = () => {
     
 }
 
-const updateAbsentUser = (id, remarks) => {
-    // const index = absents.findIndex(user => user.id == id);
-    // console.log('index: ', index);
-    // const user = absents[index];
-    // user.remarks = remarks;
+const updateAbsentUser = (id, username, remarks) => {
+    console.log('absents: ', absents)
+    const index = absents.findIndex(user => user.username == username);
+    console.log('index: ', index);
+    const user = absents[index];
+    user.remarks = remarks;
 }
 
 const getAllCurrentAbsents = () => {
@@ -25,6 +26,7 @@ const getAllCurrentAbsents = () => {
 }
 
 const setAbsents = (data) => {
+    console.log('absents: ', data)
     absents = data;
 }
 

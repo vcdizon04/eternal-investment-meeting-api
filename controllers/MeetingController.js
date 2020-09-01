@@ -27,7 +27,7 @@ const end = async (req, res) => {
     console.log('getMeetingState: ', getMeetingState());
     io.emit(`meeting/state`, getMeetingState());
     const attendances = await getAllAttendance();
-    const absentsAttendance = attendances.data.data.filter(attendance => (getAllPresents().findIndex(present => present.username !== attendance['6'].value) > -1))
+    const absentsAttendance = attendances.data.data.filter(attendance => (getAllPresents().findIndex(present => present.username !== attendance['6'].value) > -1) )
     console.log('getAllAttendance: ', absentsAttendance)
     let absentIds = [];
     absentsAttendance.forEach(absent => {
@@ -89,7 +89,7 @@ const addAbsentRemarks = async (req, res) => {
         if(attendance['3'].value > latestAttendanceId) latestAttendanceId = attendance['3'].value
     });
     console.log('latesAttendanceId: ', latestAttendanceId);
-    await addRemarks(latestAttendanceId, req.body.remarks);
+    await addRemarks(latestAttendanceId, req.body.username, req.body.remarks);
     const io = req.app.get('socketio');
     io.emit(`meeting/absents`, getAllCurrentAbsents())
     return res.json({
@@ -136,6 +136,11 @@ const getMeeting = async (req, res) => {
 }
 
 const getAbsents =  async (req, res) => {
+    if(getAllCurrentAbsents().length > 0) {
+        return res.json({
+            data: getAllCurrentAbsents()
+        })
+    }
     let absents = await getAllAbsents();
     absents = absents.data.data.filter(user => (getAllPresents().findIndex(present => present.id == user['3'].value) < 0))
     absents = absents.map(user => {
@@ -149,6 +154,7 @@ const getAbsents =  async (req, res) => {
             status:user['13'].value,
         }
     })
+    console.log('setAbsents(absents): ', absents)
     setAbsents(absents);
     return res.json({
         data: absents

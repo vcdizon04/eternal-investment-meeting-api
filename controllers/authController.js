@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { string } = require('@hapi/joi');
 const { v4: uuidv4 } = require('uuid');
-const { getUser } = require('../services/QuickBaseService');
+const { getUser, updatePassword } = require('../services/QuickBaseService');
 
 const logIn = async (req, res) => {
     const body = req.body;
@@ -51,6 +51,12 @@ const logIn = async (req, res) => {
                 change_passwod: true,
             })
         }
+
+        if(user.data.data[0]['14'].value !== body.password) {
+            return res.status('401').json({
+                message: "Invalid username or password"
+            })
+        }
         
         return res.json({
             access_token: token,
@@ -72,6 +78,39 @@ const logIn = async (req, res) => {
 }
 
 
+const resetPassword = async (req, res) => {
+    const body = req.body;
+    const schema = Joi.object({
+        password: Joi.string()
+        .required(),
+        password_confirmation: Joi.any().valid(Joi.ref('password')).required()
+    })
+
+    const validation = schema.validate(body, {abortEarly: false});
+
+    if(validation.error) {
+        return res.status(status.bad).json(validation.error.details)
+    }
+    const token =  req.header('token')
+    console.log('token: ', token)
+
+    const payload = jwt.verify(token, process.env.TOKEN_SECRET);
+    console.log(payload);
+
+    try {
+        const user = await updatePassword(payload.user_id, body.password);
+        return res.json({
+            message: "Password updated successfully"
+        })
+
+    } catch (error) {
+        console.error(error);
+        return res.status(status.error).json(error);
+    }
+}
+
+
 module.exports = {
     logIn,
+    resetPassword
 }
