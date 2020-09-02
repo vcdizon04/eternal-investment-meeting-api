@@ -137,8 +137,9 @@ const getMeeting = async (req, res) => {
 
 const getAbsents =  async (req, res) => {
     if(getAllCurrentAbsents().length > 0) {
+        const absents = getAllCurrentAbsents().filter(user => (getAllPresents().findIndex(present => present.id == user.id) < 0))
         return res.json({
-            data: getAllCurrentAbsents()
+            data: absents
         })
     }
     let absents = await getAllAbsents();

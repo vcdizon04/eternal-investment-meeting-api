@@ -23,6 +23,7 @@ const logIn = async (req, res) => {
 
     try {
         const user  = await getUser(body);
+        console.log('user; ', user)
         if(user.data.data.length == 0) {
             return res.status(status.notfound).json({
                 message: "Username is not found"
