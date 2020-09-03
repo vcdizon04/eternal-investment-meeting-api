@@ -31,11 +31,42 @@ const end = async (req, res) => {
     console.log('getAllAttendance: ', absentsAttendance)
     let absentIds = [];
     absentsAttendance.forEach(absent => {
-        absentIds.push(absent['3'].value);
+        const schedule = absent['22'].value.replace(/\s/g, "").split('-');
+        let start, end;
+        if( schedule[0].includes('pm')) {
+            start = parseFloat(schedule[0]) + 12;
+        } else {
+            start = parseFloat(schedule[0]);
+            if(start == 12) start = start - 12;
+        }
+
+        if( schedule[1].includes('pm')) {
+            end = parseFloat(schedule[1]) + 12;
+        } else {
+            end = parseFloat(schedule[1]);
+            if(end == 12) end = end - 12;
+        }
+        let start_time 	= [start,00]
+        let end_time 	= [end,00]
+        //We've got the two start times as an array of hours/minutes values.
+        let dateObj 	= new Date(); //I just feel dirty making multiple calls to new Date().etc
+        let now 		= [dateObj.getHours(),dateObj.getMinutes()]; //Gets the current Hours/Minutes 
+        if(end_time[0] < start_time[0] && now[0] < start_time[0]){
+            start_time[0] -= 24; //This is something I came up with because I do a lot of math.
+        }else if(start_time[0] > end_time[0]){
+            end_time[0]+=24;
+        }
+        let start_string = to_hms_string(start_time); //the start string converted to a string format. Made comparisons easier.
+        let end_string = to_hms_string(end_time); //See Above
+        let now_string = to_hms_string(now); //Above
+        console.log(start_string, now_string, end_string);
+        let status = (start_string <= now_string && now_string <= end_string) 
+        console.log("status: ", status);
+        if(status)  absentIds.push(absent['3'].value);
 
     })
     console.log('absentIds: ', absentIds);
-    await updateAbsentsAttendance(absentIds);
+    if(absentIds.length > 0) await updateAbsentsAttendance(absentIds);
     return res.json({
         message: "Meeting ended successfully"
     })
@@ -54,6 +85,7 @@ const late = async (req, res) => {
 const adjourned = async (req, res) => {
     const io = req.app.get('socketio');
     adjournedMeeting();
+    io.emit(`meeting/rollcall/state`, getRollCallState());
     io.emit(`meeting/state`, getMeetingState());
     io.emit(`meeting/users`, getAllPresents())
     return res.json({
@@ -192,6 +224,16 @@ const setUserRollCallStatus =  async (req, res) => {
         message: "Success"
     })
 }
+
+const to_hms_string = (timearr) => {
+    let minutes = timearr[1];
+    let hours = "";
+    if(Math.abs(timearr[0]) < 10){
+      hours = "0";
+    }
+    hours = (timearr[0]<0) ? "-"+hours+Math.abs(timearr[0]) : hours+timearr[0];
+    return hours+":"+minutes;
+  }
 
 module.exports = {
     start,

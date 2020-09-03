@@ -130,7 +130,7 @@ const getAllAttendance = () => {
     const body = {
         "from": "bqspvwtx9",
         "select": [
-            3,11,6
+            3,11,6,22
         ],
         "where": `{6.CT.'${moment().format('MM-DD-YYYY')}'}`
     };
