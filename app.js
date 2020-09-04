@@ -10,10 +10,10 @@ const http = require("http");
 const PORT = process.env.PORT || 8080;
 const fs = require('fs');
 
-var privateKey  = fs.readFileSync('/home/eternbo0/ssl/keys/adf3e_84621_c384e28dd3716636e6bbf96275d3f674.key', 'utf8');
-var certificate = fs.readFileSync('/home/eternbo0/ssl/certs/meeting_eternal_investment_com_adf3e_84621_1606694399_ce70c86fb395aec465b7e0d5f745f078.crt', 'utf8');
+// var privateKey  = fs.readFileSync('/home/eternbo0/ssl/keys/adf3e_84621_c384e28dd3716636e6bbf96275d3f674.key', 'utf8');
+// var certificate = fs.readFileSync('/home/eternbo0/ssl/certs/meeting_eternal_investment_com_adf3e_84621_1606694399_ce70c86fb395aec465b7e0d5f745f078.crt', 'utf8');
 
-var credentials = {key: privateKey, cert: certificate};
+// var credentials = {key: privateKey, cert: certificate};
 
 // Add middleware for parsing URL encoded bodies (which are usually sent by browser)
 app.use(cors());
@@ -31,8 +31,8 @@ app.use('/api/auth', authRoute);
 const protectedRoute = require('./routes/protected');
 app.use('/api', protectedRoute);
 
-// const server = http.createServer(app);
-const server = https.createServer(credentials, app);
+const server = http.createServer(app);
+// const server = http.createServer(credentials, app);
 const io = socketIo(server); 
 
 io.set('authorization', socketioJwt.authorize({

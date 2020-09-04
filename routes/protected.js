@@ -1,11 +1,15 @@
 const authenticate = require('../middlewares/verifyAuth')
 const roles = require('../middlewares/verifyPermission');
-const { start, stamp, getAllPresentUsers, getState, stop, getMeeting, late, getAbsents, end, adjourned, rollCall, stopRollCall, setUserRollCallStatus, addAbsentRemarks } = require('../controllers/MeetingController');
+const { start, stamp, getAllPresentUsers, getState, stop, getMeeting, late, getAbsents, end, adjourned, rollCall, stopRollCall, setUserRollCallStatus, addAbsentRemarks, } = require('../controllers/MeetingController');
+const { route } = require('./auth');
+const { getUserAttendanceToday } = require('../controllers/AttendanceController');
 const router = require('express').Router();
 
 
 
 // Routes
+
+//meeting
 
 router.post('/meeting/start',  start);
 router.post('/meeting/stop',  stop);
@@ -21,5 +25,9 @@ router.post('/meeting/roll-call/start',  rollCall);
 router.post('/meeting/roll-call/stop',  stopRollCall);
 router.put('/meeting/roll-call/users/:userId',  setUserRollCallStatus);
 router.post('/meeting/absents/remarks', addAbsentRemarks);
+
+
+//daily-attendance
+router.get('/attendance', getUserAttendanceToday)
 
 module.exports = router;

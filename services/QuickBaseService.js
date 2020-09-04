@@ -25,6 +25,21 @@ const getAttendanceByFullname = (fullName) => {
     })
 }
 
+const getAttendanceByFullnameToday = (fullName) => {
+    const toDay = moment().format('MM-DD-YYYY');
+    const body = {
+        "from": "bqspvwtx9",
+        "select": [
+            3,11
+        ],
+    
+        "where": `{11.CT.'${fullName}'}AND{6.CT.'${toDay}'}`,
+    };
+    return axios.post('https://api.quickbase.com/v1/records/query', JSON.stringify(body), {
+        headers: headers
+    })
+}
+
 const addRemarks = async (id, username, reason) => {
     const currentHours = new Date().getHours();
 
