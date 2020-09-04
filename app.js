@@ -10,10 +10,10 @@ const http = require("http");
 const PORT = process.env.PORT || 8080;
 const fs = require('fs');
 
-// var privateKey  = fs.readFileSync('/home/eternbo0/ssl/keys/ef826_ee615_0d4973fc86d7854ede1a814e891ce41b.key', 'utf8');
-var certificate = fs.readFileSync('/home/eternbo0/ssl/certs/meeting_eternal_investment_com_ef826_ee615_1630371605_a32e86b3b91e757e1d73d09c6595869b.crt', 'utf8');
+var privateKey  = fs.readFileSync('/home/eternbo0/ssl/keys/adf3e_84621_c384e28dd3716636e6bbf96275d3f674.key', 'utf8');
+var certificate = fs.readFileSync('/home/eternbo0/ssl/certs/meeting_eternal_investment_com_adf3e_84621_1606694399_ce70c86fb395aec465b7e0d5f745f078.crt', 'utf8');
 
-var credentials = {cert: certificate};
+var credentials = {key: privateKey, cert: certificate};
 
 // Add middleware for parsing URL encoded bodies (which are usually sent by browser)
 app.use(cors());
