@@ -10,8 +10,8 @@ const http = require("http");
 const PORT = process.env.PORT || 8080;
 const fs = require('fs');
 
-var privateKey  = fs.readFileSync('/etc/ssl/private/server.eternal-investment.com.key', 'utf8');
-var certificate = fs.readFileSync('/etc/ssl/certs/server.eternal-investment.com.crt', 'utf8');
+var privateKey  = fs.readFileSync('/home/eternbo0/ssl/keys/ef826_ee615_0d4973fc86d7854ede1a814e891ce41b.key', 'utf8');
+var certificate = fs.readFileSync('/home/eternbo0/ssl/certs/meeting_eternal_investment_com_ef826_ee615_1630371605_a32e86b3b91e757e1d73d09c6595869b.crt', 'utf8');
 
 var credentials = {key: privateKey, cert: certificate};
 
