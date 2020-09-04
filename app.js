@@ -8,11 +8,12 @@ const socketioJwt   = require('socketio-jwt');
 const https = require("https");
 const http = require("http");
 const PORT = process.env.PORT || 8080;
-// const db = require("./models");
+const fs = require('fs');
 
-// db.sequelize.sync({
-//     // alter: true
-// });
+var privateKey  = fs.readFileSync('/etc/ssl/private/ server.eternal-investment.com.key', 'utf8');
+var certificate = fs.readFileSync('/etc/ssl/certs/server.eternal-investment.com.crt', 'utf8');
+
+var credentials = {key: privateKey, cert: certificate};
 
 // Add middleware for parsing URL encoded bodies (which are usually sent by browser)
 app.use(cors());
@@ -30,9 +31,9 @@ app.use('/api/auth', authRoute);
 const protectedRoute = require('./routes/protected');
 app.use('/api', protectedRoute);
 
-const server = http.createServer(app);
+// const server = http.createServer(app);
+const server = https.createServer(credentials, app);
 const io = socketIo(server); 
-
 
 io.set('authorization', socketioJwt.authorize({
     secret: process.env.TOKEN_SECRET,
