@@ -214,5 +214,6 @@ module.exports = {
     getAllAttendance,
     updateAbsentsAttendance,
     addRemarks,
-    updatePassword
+    updatePassword,
+    getAttendanceByFullnameToday
 }
