@@ -20,15 +20,15 @@ const getUserAttendanceToday = async (req, res) => {
 
     let response;
 
-    if(attendace.data.data.length > 0) {
-        response = {
-            username: attendace.data.data[0]['11'].value,
-            date: attendace.data.data[0]['6'].value,
-            time: attendace.data.data[0]['13'].value,
-            remarks: attendace.data.data[0]['8'].value,
-        }
+    if(attendace.data.data.length <= 0) {
+        return res.json("No attendance");    
     }
-
+    response = {
+        username: attendace.data.data[0]['11'].value,
+        date: attendace.data.data[0]['6'].value,
+        time: attendace.data.data[0]['13'].value,
+        remarks: attendace.data.data[0]['8'].value,
+    }
     return res.json({
         data: response
     });    
@@ -39,7 +39,7 @@ const stampAttendance = async (req,res) => {
         const attendace = await addAttendance(req.params.userId, 'On Time');
         console.log(attendace)
         return res.json({
-            message:attendace.data.metadata
+            message: 'Successfully stamped in'
         })
     } catch (error) {
         return res.status(400).json({
