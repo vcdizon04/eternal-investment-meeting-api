@@ -2,7 +2,7 @@ const authenticate = require('../middlewares/verifyAuth')
 const roles = require('../middlewares/verifyPermission');
 const { start, stamp, getAllPresentUsers, getState, stop, getMeeting, late, getAbsents, end, adjourned, rollCall, stopRollCall, setUserRollCallStatus, addAbsentRemarks, } = require('../controllers/MeetingController');
 const { route } = require('./auth');
-const { getUserAttendanceToday } = require('../controllers/AttendanceController');
+const { getUserAttendanceToday, stampAttendance} = require('../controllers/AttendanceController');
 const router = require('express').Router();
 
 
@@ -28,6 +28,7 @@ router.post('/meeting/absents/remarks', addAbsentRemarks);
 
 
 //daily-attendance
-router.get('/attendance', getUserAttendanceToday)
+router.get('/users/:userId/attendance', getUserAttendanceToday);
+router.post('/users/:userId/attendance', stampAttendance);
 
 module.exports = router;

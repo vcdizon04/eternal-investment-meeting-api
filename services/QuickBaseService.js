@@ -14,7 +14,7 @@ const headers = {
 
 const getAttendanceByFullname = (fullName) => {
     const body = {
-        "from": "bqspvwtx9",
+        "from": process.env.ATTENDANCE_TABLE,
         "select": [
             3,11
         ],
@@ -25,15 +25,15 @@ const getAttendanceByFullname = (fullName) => {
     })
 }
 
-const getAttendanceByFullnameToday = (fullName) => {
+const getAttendanceByFullnameToday = (id) => {
     const toDay = moment().format('MM-DD-YYYY');
     const body = {
-        "from": "bqspvwtx9",
+        "from": process.env.ATTENDANCE_TABLE,
         "select": [
-            3,11
+            3,11,6,13,8
         ],
     
-        "where": `{11.CT.'${fullName}'}AND{6.CT.'${toDay}'}`,
+        "where": `{9.EX.'${id}'}AND{6.EX.'${toDay}'}`,
     };
     return axios.post('https://api.quickbase.com/v1/records/query', JSON.stringify(body), {
         headers: headers
@@ -44,7 +44,7 @@ const addRemarks = async (id, username, reason) => {
     const currentHours = new Date().getHours();
 
     const body = {
-        "to": "bqspvwtx9",
+        "to": process.env.ATTENDANCE_TABLE,
          "data": [
              {
                  "3": {
@@ -73,7 +73,7 @@ const addRemarks = async (id, username, reason) => {
 
 const updateAttendance = async (id) => {
     const body = {
-       "to": "bqspvwtx9",
+       "to": process.env.ATTENDANCE_TABLE,
         "data": [
             {
                 "3": {
@@ -104,9 +104,41 @@ const updateAttendance = async (id) => {
     })
 }
 
+const addAttendance = async (id, status) => {
+    const body = {
+       "to": process.env.ATTENDANCE_TABLE,
+        "data": [
+            {
+                "9": {
+                    "value": id
+                },
+                "6": {
+                    "value": moment().format('YYYY-MM-DD')
+                },
+                "13": {
+                    "value": moment().format('HH:MM')
+                },
+                "8": {
+                    "value": status
+                },
+                "46": {
+                    "value": true
+                }
+                
+            }
+        ]
+    };
+
+    console.log(JSON.stringify(body))
+
+    return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
+        headers: headers
+    })
+}
+
 const updateAbsentsAttendance = async (ids) => {
     const body = {
-       "to": "bqspvwtx9",
+       "to": process.env.ATTENDANCE_TABLE,
         "data": [
            
         ],
@@ -143,7 +175,7 @@ const updateAbsentsAttendance = async (ids) => {
 
 const getAllAttendance = () => {
     const body = {
-        "from": "bqspvwtx9",
+        "from": process.env.ATTENDANCE_TABLE,
         "select": [
             3,11,6,22
         ],
@@ -157,7 +189,7 @@ const getAllAttendance = () => {
 
 const getUser =  (user) => {
     const body = {
-        "from": "bqspvwtgy",
+        "from": process.env.STAFF_TABLE,
         "select": [
         6,9,14,3,60,269,19,13,119
         ],
@@ -170,7 +202,7 @@ const getUser =  (user) => {
 
 const updatePassword = async (id, password) => {
     const body = {
-       "to": "bqspvwtgy",
+       "to": process.env.STAFF_TABLE,
         "data": [
             {
                 "3": {
@@ -194,7 +226,7 @@ const updatePassword = async (id, password) => {
 
 const getAllAbsents = () => {
     let body = {
-        "from": "bqspvwtgy",
+        "from": process.env.STAFF_TABLE,
         "select": [
         6,9,14,3,60,269,19,13,119
         ],
@@ -215,5 +247,6 @@ module.exports = {
     updateAbsentsAttendance,
     addRemarks,
     updatePassword,
-    getAttendanceByFullnameToday
+    getAttendanceByFullnameToday,
+    addAttendance
 }
