@@ -16,22 +16,33 @@ const getUserAttendanceToday = async (req, res) => {
     // schema.validate(req.body, {abortEarly: false});
 
     const attendace = await getAttendanceByFullnameToday(req.params.userId);
-    console.log(attendace.data);
+    console.log(attendace.data);    
 
-    let response;
+    try {
 
-    if(attendace.data.data.length <= 0) {
-        return res.json("No attendance");    
+        let response;
+
+        if(attendace.data.data.length <= 0) {
+            return res.json("No attendance");    
+        }
+
+        response = {
+            username: attendace.data.data[0]['11'].value,
+            date: attendace.data.data[0]['6'].value,
+            time: attendace.data.data[0]['13'].value,
+            remarks: attendace.data.data[0]['8'].value,
+        }
+        return res.json({
+            data: response
+        });    
+
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+            message: "Error please try again later"
+        })
     }
-    response = {
-        username: attendace.data.data[0]['11'].value,
-        date: attendace.data.data[0]['6'].value,
-        time: attendace.data.data[0]['13'].value,
-        remarks: attendace.data.data[0]['8'].value,
-    }
-    return res.json({
-        data: response
-    });    
+
 }
 
 const stampAttendance = async (req,res) => {
