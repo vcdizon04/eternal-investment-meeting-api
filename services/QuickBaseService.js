@@ -97,8 +97,6 @@ const updateAttendance = async (id) => {
         }
     }
 
-    console.log(JSON.stringify(body))
-
     return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
         headers: headers
     })
@@ -128,8 +126,6 @@ const addAttendance = async (id, status) => {
             }
         ]
     };
-
-    console.log(JSON.stringify(body))
 
     return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
         headers: headers
@@ -167,7 +163,6 @@ const updateAbsentsAttendance = async (ids) => {
     
     })
 
-    console.log(JSON.stringify(body))
     return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
         headers: headers
     })
@@ -181,7 +176,6 @@ const getAllAttendance = () => {
         ],
         "where": `{6.CT.'${moment().format('MM-DD-YYYY')}'}`
     };
-    console.log(body);
     return axios.post('https://api.quickbase.com/v1/records/query', JSON.stringify(body), {
         headers: headers
     })
@@ -218,7 +212,6 @@ const updatePassword = async (id, password) => {
             6,9,14,3,60,269,19,13,119
         ]
     };
-    console.log(JSON.stringify(body))
     return axios.post('https://api.quickbase.com/v1/records', JSON.stringify(body), {
         headers: headers
     })

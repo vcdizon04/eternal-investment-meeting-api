@@ -4,7 +4,6 @@ const { getAllAbsents, getAttendanceByFullname, updateAttendance, getAllAttendan
 const start = async (req, res) => {
     const io = req.app.get('socketio');
     setMeetingState('start');
-    console.log('getMeetingState: ', getMeetingState());
     io.emit(`meeting/state`, getMeetingState());
     return res.json({
         message: "Meeting started successfully"
@@ -14,7 +13,6 @@ const start = async (req, res) => {
 const stop = async (req, res) => {
     const io = req.app.get('socketio');
     setMeetingState('late');
-    console.log('getMeetingState: ', getMeetingState());
     io.emit(`meeting/state`, getMeetingState());
     return res.json({
         message: "Meeting stopped successfully"
@@ -24,11 +22,9 @@ const stop = async (req, res) => {
 const end = async (req, res) => {
     const io = req.app.get('socketio');
     setMeetingState('end');
-    console.log('getMeetingState: ', getMeetingState());
     io.emit(`meeting/state`, getMeetingState());
     const attendances = await getAllAttendance();
     const absentsAttendance = attendances.data.data.filter(attendance => (getAllPresents().findIndex(present => present.username !== attendance['6'].value) > -1) )
-    console.log('getAllAttendance: ', absentsAttendance)
     let absentIds = [];
     absentsAttendance.forEach(absent => {
         const schedule = absent['22'].value.replace(/\s/g, "").split('-');
@@ -59,13 +55,10 @@ const end = async (req, res) => {
         let start_string = to_hms_string(start_time); //the start string converted to a string format. Made comparisons easier.
         let end_string = to_hms_string(end_time); //See Above
         let now_string = to_hms_string(now); //Above
-        console.log(start_string, now_string, end_string);
         let status = (start_string <= now_string && now_string <= end_string) 
-        console.log("status: ", status);
         if(status)  absentIds.push(absent['3'].value);
 
     })
-    console.log('absentIds: ', absentIds);
     if(absentIds.length > 0) await updateAbsentsAttendance(absentIds);
     return res.json({
         message: "Meeting ended successfully"
@@ -75,7 +68,6 @@ const end = async (req, res) => {
 const late = async (req, res) => {
     const io = req.app.get('socketio');
     setMeetingState('late-start');
-    console.log('getMeetingState: ', getMeetingState());
     io.emit(`meeting/state`, getMeetingState());
     return res.json({
         message: "Late entry started successfully"
@@ -98,15 +90,11 @@ const stamp = async (req, res) => {
     const result = await getAttendanceByFullname(req.body.username);
     let latestAttendanceId = 0;
     result.data.data.forEach(attendance => {
-        console.log("attendance['3'].value :", attendance['3'].value)
         if(attendance['3'].value > latestAttendanceId) latestAttendanceId = attendance['3'].value
     });
-    console.log('latesAttendanceId: ', latestAttendanceId);
     await updateAttendance(latestAttendanceId);
     const io = req.app.get('socketio');
-    console.log(req.body);
     addPresentUser(req.body);
-    console.log(' getAllPresents(): ',  getAllPresents())
     io.emit(`meeting/users`, getAllPresents())
     return res.json({
         message: "Stamp successfully"
@@ -117,10 +105,8 @@ const addAbsentRemarks = async (req, res) => {
     const result = await getAttendanceByFullname(req.body.username);
     let latestAttendanceId = 0;
     result.data.data.forEach(attendance => {
-        console.log("attendance['3'].value :", attendance['3'].value)
         if(attendance['3'].value > latestAttendanceId) latestAttendanceId = attendance['3'].value
     });
-    console.log('latesAttendanceId: ', latestAttendanceId);
     await addRemarks(latestAttendanceId, req.body.username, req.body.remarks);
     const io = req.app.get('socketio');
     io.emit(`meeting/absents`, getAllCurrentAbsents())
@@ -131,12 +117,10 @@ const addAbsentRemarks = async (req, res) => {
 
 const stampLate = async (req, res) => {
     const io = req.app.get('socketio');
-    console.log(req.body);
     addPresentUser({
         ...req.body,
         isLate: true
     });
-    console.log(' getAllPresents(): ',  getAllPresents())
     io.emit(`meeting/users`, getAllPresents())
     return res.json({
         message: "Stamp successfully"
@@ -187,7 +171,6 @@ const getAbsents =  async (req, res) => {
             status:user['13'].value,
         }
     })
-    console.log('setAbsents(absents): ', absents)
     setAbsents(absents);
     return res.json({
         data: absents

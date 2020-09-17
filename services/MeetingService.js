@@ -14,9 +14,7 @@ const updateAbasents = () => {
 }
 
 const updateAbsentUser = (id, username, remarks) => {
-    console.log('absents: ', absents)
     const index = absents.findIndex(user => user.username == username);
-    console.log('index: ', index);
     const user = absents[index];
     user.remarks = remarks;
 }
@@ -26,7 +24,6 @@ const getAllCurrentAbsents = () => {
 }
 
 const setAbsents = (data) => {
-    console.log('absents: ', data)
     absents = data;
 }
 
@@ -43,7 +40,6 @@ const getRollCallState = () => {
 }
 const updateUser = (id) => {
     const index = presents.findIndex(user => user.id == id);
-    console.log('index: ', index);
     const user = presents[index];
     user.rollCall = true;
 }

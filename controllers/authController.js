@@ -23,7 +23,6 @@ const logIn = async (req, res) => {
 
     try {
         const user  = await getUser(body);
-        console.log('user; ', user)
         if(user.data.data.length == 0) {
             return res.status(status.notfound).json({
                 message: "Username is not found"
@@ -35,7 +34,6 @@ const logIn = async (req, res) => {
             team: user.data.data[0]['9'].value,
             
         }
-        console.log(payload);
         const token = jwt.sign(payload, process.env.TOKEN_SECRET);
 
         if(!user.data.data[0]['14'].value) {
@@ -93,10 +91,8 @@ const resetPassword = async (req, res) => {
         return res.status(status.bad).json(validation.error.details)
     }
     const token =  req.header('token')
-    console.log('token: ', token)
 
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
-    console.log(payload);
 
     try {
         const user = await updatePassword(payload.user_id, body.password);

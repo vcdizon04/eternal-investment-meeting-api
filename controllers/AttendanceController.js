@@ -16,7 +16,6 @@ const getUserAttendanceToday = async (req, res) => {
     // schema.validate(req.body, {abortEarly: false});
 
     const attendace = await getAttendanceByFullnameToday(req.params.userId);
-    console.log(attendace.data);    
 
     try {
 
@@ -48,7 +47,6 @@ const getUserAttendanceToday = async (req, res) => {
 const stampAttendance = async (req,res) => {
     try {
         const attendace = await addAttendance(req.params.userId, 'On Time');
-        console.log(attendace)
         return res.json({
             message: 'Successfully stamped in'
         })
